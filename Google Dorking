@@ -1,0 +1,47 @@
+import webbrowser
+import time
+import random
+import re
+
+# List of Google Dork queries
+dorks = [
+    "site:{url} ext:doc | ext:docx | ext:odt | ext:rtf | ext:sxw | ext:psw | ext:ppt | ext:pptx | ext:pps | ext:csv",
+    "site:{url} intitle:index.of",
+    "site:{url} ext:xml | ext:conf | ext:cnf | ext:reg | ext:inf | ext:rdp | ext:cfg | ext:txt | ext:ora | ext:ini | ext:env",
+    "site:{url} ext:sql | ext:dbf | ext:mdb",
+    "site:{url} ext:log",
+    "site:{url} ext:bkf | ext:bkp | ext:bak | ext:old | ext:backup"
+]
+
+def is_valid_url(url):
+    # Simple regex to check if the URL is valid
+    pattern = re.compile(r'^(https?://)?([a-z0-9.-]+)(:[0-9]{1,5})?(/.*)?$', re.IGNORECASE)
+    return pattern.match(url)
+
+
+def open_dork_tabs(url):
+    for dork in dorks:
+        # Format the dork with the provided URL
+        query = dork.format(url=url)
+        # Encode the query for a Google search URL
+        search_url = f"https://www.google.com/search?q={query.replace(' ', '+')}"
+
+        # Open a new tab in the browser for each search URL
+        webbrowser.open_new_tab(search_url)
+        print(f"Opened tab for query: {query}")
+
+        # Wait a random number of seconds between 2 and 5 before opening the next tab
+        time.sleep(random.uniform(2, 5))
+
+
+# Example usage
+if __name__ == "__main__":
+    while True:
+        target_url = input("Enter the target URL (e.g., example.com) or type 'exit' to quit: ")
+        if target_url.lower() == 'exit':
+            print("Exiting the tool.")
+            break
+        if is_valid_url(target_url):
+            open_dork_tabs(target_url)
+        else:
+            print("Invalid URL format. Please enter a valid URL.")
